@@ -1,8 +1,8 @@
 {
-  "name": "nodebazaar",
+  "name": "dvwa-nodejs",
   "version": "2.1.0",
   "private": true,
-  "description": "NodeBazaar - a real Node.js shop that is intentionally full of security bugs, for training and security tooling research",
+  "description": "DVWA NodeJS - a real Node.js shop (NodeBazaar) that is intentionally full of security bugs, for training and security tooling research. Node.js port of DVWA.",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",

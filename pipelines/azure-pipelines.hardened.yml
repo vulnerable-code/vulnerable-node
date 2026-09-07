@@ -1,4 +1,4 @@
-# HARDENED — NodeBazaar CI (Azure DevOps)
+# HARDENED — DVWA NodeJS CI (Azure DevOps)
 # Reference version for the training lab docs/labs/11-poisoned-pipelines.md.
 # Differences vs azure-pipelines.yml:
 #   1. PR validation runs WITHOUT secrets; the secret-consuming deploy job

@@ -1,4 +1,4 @@
-# Changelog
+# Changelog — dvwa-nodejs
 
 All notable changes to this project. Format based on [Keep a Changelog](https://keepachangelog.com/).
 

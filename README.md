@@ -1,12 +1,16 @@
-# NodeBazaar
+# dvwa-nodejs
 
 <p align="center">
-  <img src="docs/banner.png" alt="NodeBazaar — a real Node.js shop, intentionally full of security bugs" width="100%">
+  <img src="docs/logo.png" alt="dvwa-nodejs logo" width="220">
 </p>
 
 <p align="center">
+  <strong>dvwa-nodejs</strong> — Damn Vulnerable Node.js Application.<br/>
+  Inside it runs <strong>NodeBazaar</strong>, a real geek-merch shop that is intentionally full of security bugs.<br/>
   Express · Postgres · Mongo · Docker Compose · OWASP Top 10:2025
-  <br/>
+</p>
+
+<p align="center">
   Inspired by <a href="https://github.com/digininja/DVWA">DVWA</a>
   · Author <a href="https://github.com/cr0hn">Daniel García (cr0hn)</a>
   · <a href="LICENSE">BSD</a>
@@ -15,8 +19,6 @@
 <p align="center">
   <code>no&nbsp;mocks</code>&nbsp;·&nbsp;<code>no&nbsp;fake&nbsp;vulns</code>&nbsp;·&nbsp;<code>real&nbsp;PostgreSQL&nbsp;on&nbsp;the&nbsp;other&nbsp;end</code>
 </p>
-
-![NodeBazaar catalog](docs/screenshots/home-catalog.png)
 
 **This is not a toy mock.** NodeBazaar is a working storefront: catalog, product pages, reviews, guest checkout with a Stripe-style test card, orders, account, admin tools, and a small JSON API. The bugs are real code paths against real Postgres and Mongo. When you inject SQL, you hit PostgreSQL. When you SSRF, the app reaches services on the Docker network. Nothing is faked with a hardcoded "hack succeeded" string.
 
