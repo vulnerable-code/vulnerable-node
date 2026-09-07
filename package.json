@@ -1,6 +1,6 @@
 {
   "name": "nodebazaar",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "NodeBazaar - a real Node.js shop that is intentionally full of security bugs, for training and security tooling research",
   "scripts": {
