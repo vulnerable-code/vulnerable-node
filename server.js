@@ -73,6 +73,7 @@ async function main() {
   // route relies only on the session cookie.
 
   app.use(require("./routes/pages"));
+  app.use(require("./routes/extras"));
   app.use(require("./routes/shop"));
   app.use(require("./routes/auth"));
   app.use(require("./routes/orders"));
