@@ -62,6 +62,12 @@ services:
         condition: service_started
       vault:
         condition: service_started
+    # Hardening (deployment-level — the app stays vulnerable on purpose):
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
 
 volumes:
   pgdata:
