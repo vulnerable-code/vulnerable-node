@@ -10,7 +10,7 @@
     <form method="post" action="/tools/fetch" class="form">
       <label>URL <input name="url" placeholder="http://imds:8090/latest/meta-data/" required></label>
       <label>Bearer token (optional) <input name="token"></label>
-      <button type="submit">Fetch</button>
+      <button type="submit" class="btn btn-primary">Fetch</button>
     </form>
   </div>
   <div>
@@ -22,7 +22,7 @@
     <form method="post" action="/tools/regex" class="form">
       <label>Pattern <input name="pattern" value="^(\d+)*$" required></label>
       <label>Input <textarea name="input" rows="3">1111111111111111111111111111111X</textarea></label>
-      <button type="submit">Test</button>
+      <button type="submit" class="btn btn-primary">Test</button>
     </form>
     <% if (typeof error !== 'undefined' && error) { %><p class="error-box"><%= error %></p><% } %>
   </div>

@@ -1,33 +1,46 @@
 <section class="hero">
   <div class="hero-copy">
+    <span class="eyebrow">Free shipping over 50 € · 30-day returns</span>
     <h1>Gear for people who read error messages <em>for fun</em>.</h1>
     <p class="lede">Keyboards loud enough to end careers. Ducks with opinions. Mugs with punchlines. Everything a well-balanced engineer needs to avoid going outside.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#featured">Shop the good stuff</a>
+      <a class="btn btn-primary" href="/categories/keyboards">Shop the good stuff</a>
       <a class="btn btn-ghost" href="/about">Why we exist</a>
     </div>
-    <p class="hero-note">Free shipping over 50 € · 30-day returns · Zero functional guarantees</p>
+    <ul class="hero-trust">
+      <li>✓ 12,400 orders shipped (to nobody, this is a lab)</li>
+      <li>✓ Secure checkout* <span class="muted">(*see the docs, that is the joke)</span></li>
+      <li>✓ Support answers within 2 business decades</li>
+    </ul>
   </div>
 </section>
 
-<section class="cats">
-  <% categories.forEach(function (c) { %>
-    <a class="cat-chip" href="/categories/<%= c.category %>"><%= c.category %> <span><%= c.n %></span></a>
-  <% }) %>
+<section class="cats-band">
+  <h2>Browse by mood</h2>
+  <div class="cats-grid">
+    <% categories.forEach(function (c) { %>
+      <a class="cat-card" href="/categories/<%= c.category %>">
+        <strong><%= c.category.charAt(0).toUpperCase() + c.category.slice(1) %></strong>
+        <span><%= c.n %> product<%= c.n === 1 ? '' : 's' %></span>
+      </a>
+    <% }) %>
+  </div>
 </section>
 
 <section id="featured">
-  <h2>This week's enablers</h2>
+  <div class="section-head">
+    <h2>This week's enablers</h2>
+    <a class="see-all" href="/home">See catalog →</a>
+  </div>
   <div class="grid">
     <% featured.forEach(function (p) { %>
       <a class="card" href="/products/<%= p.id %>">
         <img src="/img/<%= p.image %>" alt="<%= p.name %>" loading="lazy">
         <div class="card-body">
           <h3><%= p.name %></h3>
-          <p class="muted"><%= p.description.length > 90 ? p.description.slice(0, 87) + '…' : p.description %></p>
+          <p class="muted"><%= p.description.length > 80 ? p.description.slice(0, 77) + '…' : p.description %></p>
           <div class="row">
             <span class="price"><%= (p.price_cents / 100).toFixed(2) %> €</span>
-            <% p.tags.slice(0, 3).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
           </div>
         </div>
       </a>
@@ -35,18 +48,51 @@
   </div>
 </section>
 
-<section class="strip">
-  <div class="strip-item"><strong>10,000+</strong><span>bugs shipped</span></div>
-  <div class="strip-item"><strong>4.9★</strong><span>from reviewers we pay</span></div>
-  <div class="strip-item"><strong>0</strong><span>security audits</span></div>
-  <div class="strip-item"><strong>24h</strong><span>time to regret</span></div>
+<section class="value-band">
+  <div class="value">
+    <div class="value-icon">🚚</div>
+    <h3>Fast delivery</h3>
+    <p>Orders materialize instantly in our database. Physical world shipping is left as an exercise for the reader.</p>
+  </div>
+  <div class="value">
+    <div class="value-icon">🔒</div>
+    <h3>"Secure" by design</h3>
+    <h4 class="value-sub">Every hole documented, with the fix, in the labs.</h4>
+    <p>Curious? <a href="/faq">Start here</a>.</p>
+  </div>
+  <div class="value">
+    <div class="value-icon">🎁</div>
+    <h3>Gift-ready</h3>
+    <p>Every order arrives wrapped in a story. The duck explains your bug; the mug explains your exit.</p>
+  </div>
+</section>
+
+<section class="quote-band">
+  <blockquote>
+    “I bought the duck to debug my code and now it attends every meeting. Best hire I ever made.”
+    <cite>— A very real customer, probably</cite>
+  </blockquote>
 </section>
 
 <section class="story">
-  <div>
-    <h2>Built by engineers, priced by optimists</h2>
-    <p>NodeBazaar started as a desk drawer full of conference swag and a credit card that needed exercise. Today we curate the finest desk toys, gag gifts and genuinely useful hardware for people whose hobby is also their job and whose job is also their personality.</p>
-    <p>Every product is tested in our lab (a standing desk) and photographed by our art department (the same standing desk). If it makes an engineer smile, we sell it. If it makes an engineer's manager buy it, we sell two.</p>
-    <a class="btn btn-ghost" href="/about">Read our story →</a>
+  <div class="story-grid">
+    <div>
+      <h2>Built by engineers, priced by optimists</h2>
+      <p>NodeBazaar started as a desk drawer full of conference swag and a credit card that needed exercise. Today we curate the finest desk toys, gag gifts and genuinely useful hardware for people whose hobby is also their job and whose job is also their personality.</p>
+      <p>Every product is tested in our lab (a standing desk) and photographed by our art department (the same standing desk). If it makes an engineer smile, we sell it. If it makes an engineer's manager buy it, we sell two.</p>
+      <a class="btn btn-ghost" href="/about">Read our story →</a>
+    </div>
+    <div class="story-stats">
+      <div class="stat"><strong>12</strong><span>products we actually like</span></div>
+      <div class="stat"><strong>14</strong><span>documented security labs</span></div>
+      <div class="stat"><strong>0</strong><span>security audits</span></div>
+      <div class="stat"><strong>24h</strong><span>time to regret</span></div>
+    </div>
   </div>
+</section>
+
+<section class="cta-band">
+  <h2>Stop reading. Start buying.</h2>
+  <p>The catalog is open — no account needed until the money part.</p>
+  <a class="btn btn-primary" href="/products/2">Meet the duck</a>
 </section>

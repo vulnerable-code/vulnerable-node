@@ -46,6 +46,8 @@ Default host port is `8888` so it does not fight proxies on `8080` (Caido and fr
 
 You only need Docker. No host Node.js, Postgres, or Mongo.
 
+**The catalog is public** — like a real shop. Login is only required to post reviews or see order history; checkout works as guest too (and the guest flow is where CSRF and price tampering get interesting).
+
 Optional: import [`postman/NodeBazaar.postman_collection.json`](postman/NodeBazaar.postman_collection.json) (`baseUrl` = `http://localhost:8888`).
 
 ### Lab accounts

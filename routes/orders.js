@@ -6,7 +6,10 @@ const db = require("../model/db");
 const { requireLogin } = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/checkout", requireLogin, (req, res) => {
+router.get("/checkout", (req, res) => {
+  // Guests can buy; login is offered, not forced. Identity is only needed
+  // for the account area — a shop that walls its catalog behind a login
+  // loses customers.
   res.render("checkout", { error: null, result: null });
 });
 
@@ -16,7 +19,7 @@ router.get("/checkout", requireLogin, (req, res) => {
 // VULN (A04): PAN and CVV are stored verbatim (see model/db.logPaymentAttempt).
 // SAFE: derive amount from the product row server-side, add a CSRF token,
 // tokenize the card via the payment provider.
-router.post("/checkout", requireLogin, async (req, res, next) => {
+router.post("/checkout", async (req, res, next) => {
   try {
     const b = req.body;
     if (!b.card_number || !b.cvv || !b.address) {
@@ -32,8 +35,11 @@ router.post("/checkout", requireLogin, async (req, res, next) => {
       card_number: b.card_number,
       cvv: b.cvv,
     };
-    const { rows } = await db.createOrder(req.session.userId, item);
-    await db.logPaymentAttempt(req.session.userId, b.card_number, b.cvv, "paid");
+    // Guests can buy: userId is null when no session. Identity only gates
+    // the account area, not the purchase.
+    const buyerId = req.session.logged ? req.session.userId : null;
+    const { rows } = await db.createOrder(buyerId, item);
+    await db.logPaymentAttempt(buyerId, b.card_number, b.cvv, "paid");
     res.render("checkout", { error: null, result: { orderId: rows[0].id, amount: item.amount_cents } });
   } catch (err) { next(err); }
 });

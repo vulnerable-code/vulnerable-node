@@ -1,11 +1,13 @@
 <h1>Register</h1>
 <% if (typeof error !== 'undefined' && error) { %><p class="error-box"><%= error %></p><% } %>
-<form method="post" action="/register" class="form narrow">
-  <label>Username <input name="username" required></label>
-  <label>Password <input name="password" type="password" required></label>
-  <label>Email <input name="email" type="email"></label>
-  <!-- VULN (A06, mass assignment): role reaches the INSERT. -->
-  <label>Role <input name="role" value="customer"></label>
-  <button type="submit">Create account</button>
-</form>
-<p class="muted">The “Role” field is here so the mass-assignment lab is obvious. A real form would not have it — the attack then uses an extra form field or a crafted POST.</p>
+<div class="auth-card">
+  <form method="post" action="/register" class="form">
+    <label>Username <input name="username" required autocomplete="username"></label>
+    <label>Password <input name="password" type="password" required autocomplete="new-password"></label>
+    <label>Email <input name="email" type="email" autocomplete="email"></label>
+    <!-- VULN (A06, mass assignment): role reaches the INSERT. -->
+    <label>Role <input name="role" value="customer"></label>
+    <button type="submit" class="btn btn-primary">Create account</button>
+  </form>
+</div>
+<p class="auth-alt">The “Role” field is here so the <a href="/faq">mass-assignment lab</a> is obvious. A real form would not have it — the attack then uses a crafted POST.</p>

@@ -1,4 +1,6 @@
 // Catalog, search, product detail with reviews.
+// Browsing is public — this is a shop. Login is only forced where money or
+// identity is involved: checkout, orders, account.
 
 const express = require("express");
 const router = express.Router();
@@ -7,21 +9,14 @@ const { requireLogin } = require("../middleware/auth");
 const config = require("../config");
 const { MongoClient } = require("mongodb");
 
-router.get("/", requireLogin, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
-    const { rows } = await db.listProducts();
-    res.render("products", { products: rows, q: null, error: null });
+    const [featured, cats] = await Promise.all([db.featuredProducts(), db.categories()]);
+    res.render("home", { featured: featured.rows, categories: cats.rows, error: null });
   } catch (err) { next(err); }
 });
 
-// VULN (A05 Injection): q lands in the SQL string. Tautology:
-//   /search?q=' OR '1'='1
-// UNION (products has 7 columns; postgres version in column 7):
-//   /search?q=' UNION SELECT 1,version(),3,4,5,6,7--
-// VULN (A02/A10): with DEBUG_ERRORS=1 the SQL error and its full text render
-// on the page instead of a friendly message.
-// SAFE: parameterized ILIKE with %q% built in JS, errors to logs.
-router.get("/search", requireLogin, async (req, res, next) => {
+router.get("/search", async (req, res, next) => {
   const q = req.query.q || "";
   try {
     const { rows } = await db.searchProducts(q);
@@ -37,7 +32,7 @@ router.get("/search", requireLogin, async (req, res, next) => {
 // VULN (A05 Injection, NoSQL): tags is a JSON body; Mongo receives it raw, so
 // {"tags": {"$ne": null}} or {"$where": "sleep(2000)"} go through.
 // SAFE: coerce to an array of strings server-side and use $in with plain values.
-router.post("/api/tags-filter", requireLogin, async (req, res, next) => {
+router.post("/api/tags-filter", async (req, res, next) => {
   const mongo = new MongoClient(config.mongoUrl);
   try {
     await mongo.connect();
@@ -53,7 +48,7 @@ router.post("/api/tags-filter", requireLogin, async (req, res, next) => {
 });
 
 // VULN (A05 Injection, NoSQL): operator objects flow into the Mongo query.
-router.get("/api/meta", requireLogin, async (req, res) => {
+router.get("/api/meta", async (req, res) => {
   const mongo = new MongoClient(config.mongoUrl);
   try {
     await mongo.connect();
@@ -69,7 +64,7 @@ router.get("/api/meta", requireLogin, async (req, res) => {
   }
 });
 
-router.get("/products/:id", requireLogin, async (req, res, next) => {
+router.get("/products/:id", async (req, res, next) => {
   try {
     const { rows } = await db.productById(req.params.id);
     if (rows.length === 0) return res.status(404).render("error", { message: "No such product", error: {} });

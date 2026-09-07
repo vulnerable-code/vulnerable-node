@@ -12,7 +12,7 @@ In code, look for `VULN:` (broken on purpose) and `SAFE:` (how to fix).
 docker compose up --build
 ```
 
-App: http://localhost:8888
+App: http://localhost:8888 — the catalog is public; you only log in to review or see order history (checkout works as guest too, which is part of the story).
 
 | Username | Password  | Role     |
 |----------|-----------|----------|

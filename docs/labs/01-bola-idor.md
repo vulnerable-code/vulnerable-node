@@ -1,6 +1,6 @@
 # Lab 01: BOLA / IDOR on orders
 
-`GET /orders/:id` loads any order by numeric id. Ownership is never checked, so one customer can read another customer's order — product, address, full card number and CVV included. The JSON API has the same flaw with `?user_id=`.
+`GET /orders/:id` loads any order by numeric id. Ownership is never checked, so one customer can read another customer's order — product, address, full card number and CVV included. The JSON API has the same flaw with `?user_id=`. With guest checkout in the mix, orders may even have no owner at all (`user_id` is nullable) — try enumerating ids after buying as guest.
 
 **OWASP Top 10:2025:** [A01 Broken Access Control](https://owasp.org/Top10/2025/)
 

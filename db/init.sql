@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE TABLE IF NOT EXISTS orders (
   id           SERIAL PRIMARY KEY,
-  user_id      INTEGER     NOT NULL REFERENCES users(id),
+  user_id      INTEGER     REFERENCES users(id),
   product_id   INTEGER     NOT NULL REFERENCES products(id),
   product_name VARCHAR(120) NOT NULL,
   quantity     INTEGER     NOT NULL DEFAULT 1,
