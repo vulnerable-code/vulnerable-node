@@ -42,6 +42,9 @@ Bob's order is `/orders/1`. Test card: `4242 4242 4242 4242`.
 | 12 | [12-secrets-in-git.md](12-secrets-in-git.md) | Secret in git history | A02 / A04 |
 | 13 | [13-prototype-pollution.md](13-prototype-pollution.md) | Prototype pollution via merge | A08 Software/Data Integrity Failures |
 | 14 | [14-redos.md](14-redos.md) | ReDoS: event loop taken down | A05 Injection / availability |
+| 15 | [15-path-traversal.md](15-path-traversal.md) | Path traversal on downloads | A01 Broken Access Control (CWE-22) |
+| 16 | [16-command-injection.md](16-command-injection.md) | Command injection in ping tool | A05 Injection (CWE-78) |
+| 17 | [17-docker-hardening.md](17-docker-hardening.md) | Docker deployment hardening | A05 / A02 |
 
 ## Suggested learning path
 
@@ -51,3 +54,12 @@ Bob's order is `/orders/1`. Test card: `4242 4242 4242 4242`.
 4. Finish with supply chain and integrity (11, 12, 13) — the ones most often missed.
 
 Each lab lists the exact file and function to fix. Fix it, restart `web`, and try the exploit again — it must fail.
+
+## Verify your fixes
+
+```bash
+npm test              # 13 exploit tests: all must PASS on the vulnerable app
+npm run verify:fixes  # inverted harness: exit 0 = you fixed them all
+```
+
+`tests/exploits.js` is the single source of truth — one exploit definition per lab, reused by both the test suite and the fix-verification CLI.

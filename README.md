@@ -81,13 +81,15 @@ Test card: `4242 4242 4242 4242`
 | 06 | Checkout price tampering | A06 Insecure Design | checkout `amount_cents` | [docs](docs/labs/06-price-tamper-checkout.md) |
 | 06b | CSRF (no tokens anywhere) | A01 | every `POST` route | [docs](docs/labs/06b-csrf.md) |
 | 07 | Forgeable JWTs (`/api/v1/*`) | [A07 Authentication Failures](https://owasp.org/Top10/2025/) | `config.js`, `middleware/auth.js` | [docs](docs/labs/07-jwt-weak-secret.md) |
-| 08 | PAN / CVV stored in clear | [A04 Cryptographic Failures](https://owasp.org/Top10/2025/) | orders / `payment_attempts` | [docs](docs/labs/08-crypto-pan-storage.md) |
 | 09 | Debug + verbose errors | [A02 Security Misconfiguration](https://owasp.org/Top10/2025/) / A10 | `DEBUG_ERRORS`, search | [docs](docs/labs/09-misconfig-debug.md) |
 | 10 | Secrets in logs + log injection | [A09 Logging & Alerting Failures](https://owasp.org/Top10/2025/) | login / contact prints | [docs](docs/labs/10-logging-failures.md) |
 | 11 | Poisoned CI pipelines | [A03](https://owasp.org/Top10/2025/) / [A08](https://owasp.org/Top10/2025/) | `.github/workflows/`, `azure-pipelines.yml` | [docs](docs/labs/11-poisoned-pipelines.md) |
 | 12 | Secret still in git history | A02 / A04 | early `.env` commit | [docs](docs/labs/12-secrets-in-git.md) |
 | 13 | Prototype pollution via merge | [A08 Software/Data Integrity Failures](https://owasp.org/Top10/2025/) | `model/merge.js`, `/preferences` | [docs](docs/labs/13-prototype-pollution.md) |
 | 14 | ReDoS: event loop outage | A05 / availability | `routes/tools.js` regex tester | [docs](docs/labs/14-redos.md) |
+| 15 | Path traversal on downloads | A01 (CWE-22) | `routes/extras.js` | [docs](docs/labs/15-path-traversal.md) |
+| 16 | Command injection (ping tool) | A05 (CWE-78) | `routes/extras.js` | [docs](docs/labs/16-command-injection.md) |
+| 17 | Docker deployment hardening | A05 / A02 | `Dockerfile`, `docker-compose.yml` | [docs](docs/labs/17-docker-hardening.md) |
 
 Cookie session drives the HTML shop. Broken JWTs are only used under `/api/v1/*`.
 
@@ -102,6 +104,16 @@ Open any route under `routes/` and search for `VULN:` / `SAFE:`. The teaching no
 // SAFE: add "AND user_id = $2" with the session user id.
 const { rows } = await db.orderById(req.params.id);
 ```
+
+## Test suite & fix verification
+
+```bash
+npm test              # 13 exploit tests — all must PASS on the vulnerable app
+npm run verify:fixes  # after you fix the labs: exit 0 means all exploits fail
+bash smoke.sh         # container hardening smoke (non-root, read-only fs)
+```
+
+`tests/exploits.js` holds one exploit definition per lab; the test suite documents the broken state and `verify:fixes` inverts the assertions to check your fixes. The hardened container runs as `node` with a read-only rootfs — see lab 17.
 
 ## Stack
 
