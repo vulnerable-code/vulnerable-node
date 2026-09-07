@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "seed": "node db/seed.js",
-    "mocks": "node mocks/serve.js"
+    "mocks": "node mocks/serve.js",
+    "test": "node --test tests/*.test.js",
+    "verify:fixes": "node scripts/verify-fix.js"
   },
   "engines": {
     "node": ">=20"
