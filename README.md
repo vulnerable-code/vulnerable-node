@@ -1,31 +1,36 @@
-# NodeBazaar (vulnerable-node)
+# NodeBazaar
 
 <p align="center">
-  <strong>A real Node.js shop that is intentionally full of security bugs.</strong><br/>
-  Express · Postgres · Mongo · Docker Compose · OWASP Top 10:2025
+  <img src="docs/banner.png" alt="NodeBazaar — a real Node.js shop, intentionally full of security bugs" width="100%">
 </p>
 
 <p align="center">
+  Express · Postgres · Mongo · Docker Compose · OWASP Top 10:2025
+  <br/>
   Inspired by <a href="https://github.com/digininja/DVWA">DVWA</a>
   · Author <a href="https://github.com/cr0hn">Daniel García (cr0hn)</a>
   · <a href="LICENSE">BSD</a>
 </p>
 
+<p align="center">
+  <code>no&nbsp;mocks</code>&nbsp;·&nbsp;<code>no&nbsp;fake&nbsp;vulns</code>&nbsp;·&nbsp;<code>real&nbsp;PostgreSQL&nbsp;on&nbsp;the&nbsp;other&nbsp;end</code>
+</p>
+
 ![NodeBazaar catalog](docs/screenshots/home-catalog.png)
 
-**This is not a toy mock.** NodeBazaar is a working storefront: catalog, product pages, reviews, checkout with a Stripe-style test card, orders, account, admin tools, and a small JSON API. The bugs are real code paths against real Postgres and Mongo. When you inject SQL, you hit PostgreSQL. When you SSRF, the app reaches services on the Docker network. Nothing is faked with a hardcoded "hack succeeded" string.
+**This is not a toy mock.** NodeBazaar is a working storefront: catalog, product pages, reviews, guest checkout with a Stripe-style test card, orders, account, admin tools, and a small JSON API. The bugs are real code paths against real Postgres and Mongo. When you inject SQL, you hit PostgreSQL. When you SSRF, the app reaches services on the Docker network. Nothing is faked with a hardcoded "hack succeeded" string.
 
 > **Local use only.** Never expose this stack to the internet.
 
-## Screenshots
-
-| Product | Cart/Checkout | Orders | Tools |
+| Product | Checkout | Orders | Sign in |
 |:---:|:---:|:---:|:---:|
-| ![Product](docs/screenshots/product-detail.png) | ![Checkout](docs/screenshots/checkout.png) | ![Orders](docs/screenshots/orders.png) | ![Tools](docs/screenshots/tools.png) |
+| ![Product](docs/screenshots/product-detail.png) | ![Checkout](docs/screenshots/checkout.png) | ![Orders](docs/screenshots/orders.png) | ![Sign in](docs/screenshots/login.png) |
 
 ## Why it exists
 
 The original *vulnerable-node* (2016) had one goal: real vulnerable Node.js code — not simulated — to measure the quality of security analyzers and train pentesters. This rewrite keeps that mission and adds what the original never had: a complete application to protect, exploit guides, and fixes.
+
+Most "vulnerable apps" look like demo shells. NodeBazaar looks and behaves like a shop you would ship, then leaves the doors open on purpose so you can practice finding and fixing them.
 
 Every risky spot is marked in the source:
 
@@ -75,7 +80,7 @@ Test card: `4242 4242 4242 4242`
 | 07 | Forgeable JWTs (`/api/v1/*`) | [A07 Authentication Failures](https://owasp.org/Top10/2025/) | `config.js`, `middleware/auth.js` | [docs](docs/labs/07-jwt-weak-secret.md) |
 | 08 | PAN / CVV stored in clear | [A04 Cryptographic Failures](https://owasp.org/Top10/2025/) | orders / `payment_attempts` | [docs](docs/labs/08-crypto-pan-storage.md) |
 | 09 | Debug + verbose errors | [A02 Security Misconfiguration](https://owasp.org/Top10/2025/) / A10 | `DEBUG_ERRORS`, search | [docs](docs/labs/09-misconfig-debug.md) |
-| 10 | Secrets in logs + log injection | [A09 Logging & Alerting Failures](https://owasp.org/Top10/2025/) | login prints | [docs](docs/labs/10-logging-failures.md) |
+| 10 | Secrets in logs + log injection | [A09 Logging & Alerting Failures](https://owasp.org/Top10/2025/) | login / contact prints | [docs](docs/labs/10-logging-failures.md) |
 | 11 | Poisoned CI pipelines | [A03](https://owasp.org/Top10/2025/) / [A08](https://owasp.org/Top10/2025/) | `.github/workflows/`, `azure-pipelines.yml` | [docs](docs/labs/11-poisoned-pipelines.md) |
 | 12 | Secret still in git history | A02 / A04 | early `.env` commit | [docs](docs/labs/12-secrets-in-git.md) |
 | 13 | Prototype pollution via merge | [A08 Software/Data Integrity Failures](https://owasp.org/Top10/2025/) | `model/merge.js`, `/preferences` | [docs](docs/labs/13-prototype-pollution.md) |
@@ -126,7 +131,7 @@ See [`sast/README.md`](sast/README.md).
 
 ```
 server.js            Express app (VULN / SAFE commented)
-routes/              Shop, auth, orders, account, tools, /api/v1
+routes/              Shop, pages, auth, orders, account, tools, /api/v1
 model/               Data access (vulnerable queries) + merge gadget
 middleware/          Session + JWT guards
 views/, public/      EJS templates and assets

