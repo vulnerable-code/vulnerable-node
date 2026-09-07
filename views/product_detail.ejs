@@ -1,13 +1,35 @@
+<div class="crumbs"><a href="/home">Home</a> › <a href="/categories/<%= product.category %>"><%= product.category %></a> › <%= product.name %></div>
 <div class="detail">
   <img src="/img/<%= product.image %>" alt="<%= product.name %>">
   <div>
     <h1><%= product.name %></h1>
-    <p><%= product.description %></p>
-    <p class="price big"><%= (product.price_cents / 100).toFixed(2) %> €</p>
-    <p class="muted">Stock: <%= product.stock %></p>
+    <p class="lede"><%= product.description %></p>
+    <div class="row buyrow">
+      <span class="price big"><%= (product.price_cents / 100).toFixed(2) %> €</span>
+      <% if (product.stock > 10) { %>
+        <span class="stock in">In stock — <%= product.stock %> units</span>
+      <% } else { %>
+        <span class="stock low">Only <%= product.stock %> left — panic accordingly</span>
+      <% } %>
+    </div>
+    <form method="post" action="/checkout" class="buybox">
+      <input type="hidden" name="product_id" value="<%= product.id %>">
+      <!-- VULN (A06): product_name and amount_cents are client-controlled. -->
+      <input type="hidden" name="product_name" value="<%= product.name %>">
+      <input type="hidden" name="amount_cents" value="<%= product.price_cents %>">
+      <label>Quantity <input name="quantity" value="1" class="qty"></label>
+      <label>Shipping address <input name="address" value="1 Main Street" required></label>
+      <label>Card number <input name="card_number" value="4242 4242 4242 4242" required></label>
+      <label>CVV <input name="cvv" value="123" required></label>
+      <button type="submit" class="btn btn-primary">Buy with test card</button>
+    </form>
+    <p class="muted small">Payments are simulated. Any 16-digit card works. That is the <a href="https://github.com/cr0hn/vulnerable-node">lab</a>, not a bug ticket.</p>
     <% product.tags.forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
 
-    <h2>Reviews</h2>
+    <h2>The long version</h2>
+    <p class="prose"><%= product.long_description %></p>
+
+    <h2>Reviews <span class="muted">(<%= reviews.length %>)</span></h2>
     <% reviews.forEach(function (r) { %>
       <div class="review">
         <span class="who"><%= r.username %></span> · <%= r.rating %>/5
@@ -19,8 +41,11 @@
     <form method="post" action="/products/<%= product.id %>/reviews" class="review-form">
       <h3>Write a review</h3>
       <select name="rating" aria-label="Rating">
-        <option value="5">5</option><option value="4">4</option><option value="3">3</option>
-        <option value="2">2</option><option value="1">1</option>
+        <option value="5">5 — life-changing</option>
+        <option value="4">4 — desk-worthy</option>
+        <option value="3">3 — it's fine</option>
+        <option value="2">2 — drawer material</option>
+        <option value="1">1 — returned mentally</option>
       </select>
       <textarea name="body" rows="3" placeholder="What do you think?" required></textarea>
       <button type="submit">Post review</button>

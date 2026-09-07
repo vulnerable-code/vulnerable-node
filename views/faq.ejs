@@ -1,0 +1,31 @@
+<h1>Frequently asked questions</h1>
+<div class="faq">
+  <details open>
+    <summary>Is this a real shop?</summary>
+    <p>It is a real <em>application</em> and a fake <em>business</em>. Orders are stored in a real database, payments are simulated, and the shipping department is a PRINT statement. You will not receive a rubber duck. You will receive an order row with your card number in it, which is the whole point.</p>
+  </details>
+  <details>
+    <summary>Why does the checkout ask for my card number if it is fake?</summary>
+    <p>Because the <a href="/docs/labs/08-crypto-pan-storage.md">PAN storage lab</a> needs something to find. Any 16 digits work. The classic test card is <code>4242 4242 4242 4242</code>. The CVV lab follows at <code>/docs/labs/08</code> too. Enjoy responsibly, on localhost only.</p>
+  </details>
+  <details>
+    <summary>Is my data safe with you?</summary>
+    <p>No, and that is documented. Passwords are plain text, cards are stored in full, logs contain secrets, and there is no CSRF protection anywhere. If you want the tour: <code>docs/labs/README.md</code> lists every hole with its fix.</p>
+  </details>
+  <details>
+    <summary>What does the URL fetcher in Admin tools actually do?</summary>
+    <p>Exactly what it says: the server fetches any URL you give it, from the server's network position. That is what makes the SSRF lab (02) interesting — the internal network has services your browser can't reach, but the app can.</p>
+  </details>
+  <details>
+    <summary>Can I use this for training my team?</summary>
+    <p>Yes. That is what it is for. The <code>sast/</code> folder also scores static analyzers against a ground-truth manifest, if your thing is measuring SAST quality instead of exploit chains.</p>
+  </details>
+  <details>
+    <summary>Shipping?</summary>
+    <p>Your order status is permanently "paid" and your package is permanently imaginary. Estimated delivery: the heat death of the staging environment.</p>
+  </details>
+  <details>
+    <summary>Returns?</summary>
+    <p>30 days, no questions asked, because there is nothing to return. Email us from the <a href="/contact">contact form</a> and we will log your feelings verbatim.</p>
+  </details>
+</div>

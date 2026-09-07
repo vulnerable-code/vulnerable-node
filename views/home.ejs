@@ -1,0 +1,52 @@
+<section class="hero">
+  <div class="hero-copy">
+    <h1>Gear for people who read error messages <em>for fun</em>.</h1>
+    <p class="lede">Keyboards loud enough to end careers. Ducks with opinions. Mugs with punchlines. Everything a well-balanced engineer needs to avoid going outside.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#featured">Shop the good stuff</a>
+      <a class="btn btn-ghost" href="/about">Why we exist</a>
+    </div>
+    <p class="hero-note">Free shipping over 50 € · 30-day returns · Zero functional guarantees</p>
+  </div>
+</section>
+
+<section class="cats">
+  <% categories.forEach(function (c) { %>
+    <a class="cat-chip" href="/categories/<%= c.category %>"><%= c.category %> <span><%= c.n %></span></a>
+  <% }) %>
+</section>
+
+<section id="featured">
+  <h2>This week's enablers</h2>
+  <div class="grid">
+    <% featured.forEach(function (p) { %>
+      <a class="card" href="/products/<%= p.id %>">
+        <img src="/img/<%= p.image %>" alt="<%= p.name %>" loading="lazy">
+        <div class="card-body">
+          <h3><%= p.name %></h3>
+          <p class="muted"><%= p.description.length > 90 ? p.description.slice(0, 87) + '…' : p.description %></p>
+          <div class="row">
+            <span class="price"><%= (p.price_cents / 100).toFixed(2) %> €</span>
+            <% p.tags.slice(0, 3).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</section>
+
+<section class="strip">
+  <div class="strip-item"><strong>10,000+</strong><span>bugs shipped</span></div>
+  <div class="strip-item"><strong>4.9★</strong><span>from reviewers we pay</span></div>
+  <div class="strip-item"><strong>0</strong><span>security audits</span></div>
+  <div class="strip-item"><strong>24h</strong><span>time to regret</span></div>
+</section>
+
+<section class="story">
+  <div>
+    <h2>Built by engineers, priced by optimists</h2>
+    <p>NodeBazaar started as a desk drawer full of conference swag and a credit card that needed exercise. Today we curate the finest desk toys, gag gifts and genuinely useful hardware for people whose hobby is also their job and whose job is also their personality.</p>
+    <p>Every product is tested in our lab (a standing desk) and photographed by our art department (the same standing desk). If it makes an engineer smile, we sell it. If it makes an engineer's manager buy it, we sell two.</p>
+    <a class="btn btn-ghost" href="/about">Read our story →</a>
+  </div>
+</section>

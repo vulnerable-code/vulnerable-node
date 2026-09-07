@@ -58,6 +58,20 @@ function createOrder(userId, item) {
   );
 }
 
+function featuredProducts() {
+  return pool.query("SELECT * FROM products WHERE featured ORDER BY id LIMIT 4");
+}
+
+function categories() {
+  return pool.query(
+    "SELECT category, COUNT(*)::int AS n FROM products GROUP BY category ORDER BY category"
+  );
+}
+
+function productsByCategory(category) {
+  return pool.query("SELECT * FROM products WHERE category = $1 ORDER BY id", [category]);
+}
+
 // VULN (A04 Cryptographic Failures): PAN and CVV kept in clear text.
 // SAFE: store only last4 + a tokenized reference; let the PSP keep the PAN.
 function logPaymentAttempt(userId, cardNumber, cvv, outcome) {
@@ -120,4 +134,7 @@ module.exports = {
   ordersForUserSorted,
   updateProfile,
   setApiToken,
+  featuredProducts,
+  categories,
+  productsByCategory,
 };

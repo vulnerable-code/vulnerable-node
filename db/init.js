@@ -22,8 +22,8 @@ async function initDb() {
     }
     for (const p of products) {
       await pool.query(
-        "INSERT INTO products (name, description, price_cents, image, tags) VALUES ($1, $2, $3, $4, $5)",
-        [p.name, p.description, p.price_cents, p.image, p.tags]
+        "INSERT INTO products (name, description, long_description, price_cents, image, stock, category, featured, tags) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+        [p.name, p.description, p.long_description, p.price_cents, p.image, p.stock, p.category, p.featured, p.tags]
       );
     }
     // A couple of reviews so product pages look alive.

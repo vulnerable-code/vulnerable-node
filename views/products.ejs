@@ -1,4 +1,4 @@
-<h1>Catalog</h1>
+<h1><%= typeof heading !== 'undefined' && heading ? heading.charAt(0).toUpperCase() + heading.slice(1) : 'Catalog' %></h1>
 <% if (typeof error !== 'undefined' && error) { %>
   <div class="error-box">
     <strong>Query error</strong>

