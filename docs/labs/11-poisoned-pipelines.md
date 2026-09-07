@@ -1,8 +1,10 @@
 # Lab 11: Poisoned CI pipelines (GitHub Actions + Azure DevOps)
 
-Both CI definitions are unsafe on purpose. The root-level files are the ones each platform picks up automatically; the hardened twins live out of the way for comparison.
+Both CI definitions are unsafe on purpose. The GitHub Actions unsafe twin is
+**manual-only** (`workflow_dispatch` — it is reading material, not CI); the
+hardened twin is the pipeline that actually runs on push/PR.
 
-- GitHub Actions: `.github/workflows/ci.yml` (unsafe) vs `.github/workflows/ci-hardened.yml`
+- GitHub Actions: `.github/workflows/ci.yml` (unsafe, manual) vs `.github/workflows/ci-hardened.yml` (real CI)
 - Azure DevOps: `azure-pipelines.yml` (unsafe) vs `pipelines/azure-pipelines.hardened.yml`
 
 **OWASP Top 10:2025:** [A03 Software Supply Chain Failures](https://owasp.org/Top10/2025/) / [A08 Software or Data Integrity Failures](https://owasp.org/Top10/2025/)

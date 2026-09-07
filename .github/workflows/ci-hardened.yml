@@ -6,15 +6,16 @@
 #   2. No untrusted interpolation into run: — payload data read from files
 #      and passed as env, always quoted
 #   3. Actions pinned to full commit SHAs
-#   4. Explicit minimal permissions: contents: read
-
-name: ci
+# The hardened pipeline IS the CI that runs on push/PR. The unsafe twin
+# (ci.yml) is manual-only reading material for the poisoned-pipeline lab.
+name: ci (hardened)
 
 on:
   pull_request:             # untrusted PRs get sandboxed builds, no secrets
     branches: [master]
   push:
     branches: [master]
+  workflow_dispatch:
 
 # Least privilege: the workflow token can read the repo, nothing else.
 permissions:

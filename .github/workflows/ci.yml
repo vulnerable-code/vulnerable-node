@@ -11,11 +11,11 @@
 
 name: ci
 
+# This workflow is intentionally unsafe and exists only as reading material
+# for docs/labs/11-poisoned-pipelines.md. It does NOT run on push/PR:
+# trigger it manually from the Actions tab if you want to see it move.
 on:
-  pull_request_target:      # VULN (1): runs in the context of the base repo
-    branches: [master]
-  push:
-    branches: [master]
+  workflow_dispatch:
 
 jobs:
   build-and-notify:

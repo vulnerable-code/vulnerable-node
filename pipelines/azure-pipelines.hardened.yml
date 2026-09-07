@@ -30,7 +30,7 @@ jobs:
 
       # SAFE: untrusted values reach the script as env vars, quoted — they
       # stay data, never shell syntax.
-      - script: echo "PR from branch: $PULL_REQUEST_SOURCE_BRANCH"
+      - script: echo 'PR from branch:' "$PULL_REQUEST_SOURCE_BRANCH"
         displayName: Show PR metadata (safe)
         condition: eq(variables['Build.Reason'], 'PullRequest')
         env:
@@ -47,7 +47,7 @@ jobs:
     steps:
       - checkout: self
       - script: |
-          echo "Deploying with key ${DEPLOY_API_KEY:0:4}****"
+          echo "Deploying with key **** masked (never log the full secret)"
           # ./scripts/deploy.sh — secret travels via env, not argv
         displayName: Deploy
         env:
