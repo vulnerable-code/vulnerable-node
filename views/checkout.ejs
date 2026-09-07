@@ -1,0 +1,20 @@
+<h1>Checkout</h1>
+<% if (typeof error !== 'undefined' && error) { %><p class="error-box"><%= error %></p><% } %>
+<% if (typeof result !== 'undefined' && result) { %>
+  <div class="ok-box">
+    Order <a href="/orders/<%= result.orderId %>">#<%= result.orderId %></a> confirmed —
+    charged <%= (result.amount / 100).toFixed(2) %> € (test card).
+  </div>
+<% } %>
+<form method="post" action="/checkout" class="form">
+  <!-- VULN (A06): amount_cents is client-controlled. -->
+  <label>Product ID <input name="product_id" value="1"></label>
+  <label>Product name <input name="product_name" value="Mechanical Keyboard MK-ULTRA"></label>
+  <label>Quantity <input name="quantity" value="1"></label>
+  <label>Amount (cents) <input name="amount_cents" value="12900"></label>
+  <label>Shipping address <input name="address" value="1 Main Street" required></label>
+  <label>Card number <input name="card_number" value="4242 4242 4242 4242" required></label>
+  <label>CVV <input name="cvv" value="123" required></label>
+  <button type="submit">Pay (test card)</button>
+</form>
+<p class="muted">Any 16-digit number works; this is a fake payment flow for training.</p>

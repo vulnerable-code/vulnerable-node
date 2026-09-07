@@ -1,5 +1,5 @@
 var express = require('express');
-var session = require('express-session')
+var session = require('express-session');
 var engine = require('ejs-locals');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -23,7 +23,7 @@ log4js.addAppender(log4js.appenders.file('app-custom.log'), 'vnode');
 var logger4js = log4js.getLogger('vnode');
 logger4js.setLevel('INFO');
 
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'))
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'));
 
 /*
  * Template engine
@@ -88,9 +88,10 @@ app.use(function(err, req, res, next) {
 /*
  * Create database
  */
-logger4js.info("Building database")
-// logger.info(("Building database");
+logger4js.info("Building database");
 
 init_db();
+
+logger4js.info("Running at: 127.0.0.1:3000");
 
 module.exports = app;

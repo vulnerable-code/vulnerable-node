@@ -1,17 +1,68 @@
-version: '2'
+# NodeBazaar — intentionally vulnerable shop.
+# Usage: docker compose up --build
+# App: http://localhost:8888
+# (8888 on purpose: Caido and many tools already claim 8080)
+
 services:
-  vulnerable_node:
-    restart: always
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nodebazaar
+      POSTGRES_PASSWORD: nodebazaar
+      POSTGRES_DB: nodebazaar
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nodebazaar -d nodebazaar"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mongo:
+    image: mongo:7
+    command: ["--quiet", "--bind_ip_all"]
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  # Fake cloud metadata service (IMDS). Only reachable inside the compose
+  # network — exactly how a real IMDS behaves. Target of the SSRF lab.
+  imds:
+    build: ./mocks/imds
+
+  # Fake secrets vault. Takes the IMDS token, hands out a "pipeline secret".
+  vault:
+    build: ./mocks/vault
+
+  web:
     build: .
     ports:
-      - "3000:3000"
-#    links:
-#      - postgres_db:postgres_db
+      - "${APP_PORT:-8888}:3000"
+    environment:
+      DATABASE_URL: postgres://nodebazaar:nodebazaar@db:5432/nodebazaar
+      MONGO_URL: mongodb://mongo:27017/nodebazaar
+      IMDS_URL: http://imds:8090
+      VAULT_URL: http://vault:8091
+      # VULN: dev-grade secrets committed for the labs.
+      SESSION_SECRET: "nodebazaar-dev-secret-do-not-use-in-prod"
+      JWT_SECRET: "jwt-super-secret"
+      # VULN (A02): verbose errors on in a "shipping" compose.
+      DEBUG_ERRORS: "1"
+      NODE_ENV: development
     depends_on:
-      - postgres_db
+      db:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      imds:
+        condition: service_started
+      vault:
+        condition: service_started
 
-  postgres_db:
-    restart: always
-    build: ./services/postgresql
-    ports:
-      - "5432:5432"
+volumes:
+  pgdata:
+  mongodata:

@@ -1,0 +1,30 @@
+<h1>Admin tools</h1>
+<div class="two-col">
+  <div>
+    <h2>URL fetcher</h2>
+    <p class="muted">Server-side fetch of any URL you paste. SSRF lab: the internal network has <code>imds:8090</code> (metadata) and <code>vault:8091</code> (secrets).</p>
+    <% if (typeof result !== 'undefined' && result) { %>
+      <p>URL: <code><%= result.url %></code> — status <%= result.status %></p>
+      <pre class="response"><%= result.body %></pre>
+    <% } %>
+    <form method="post" action="/tools/fetch" class="form">
+      <label>URL <input name="url" placeholder="http://imds:8090/latest/meta-data/" required></label>
+      <label>Bearer token (optional) <input name="token"></label>
+      <button type="submit">Fetch</button>
+    </form>
+  </div>
+  <div>
+    <h2>Regex validator</h2>
+    <p class="muted">Tests a JS regex against text. ReDoS lab: pattern <code>^(\d+)*$</code> with a long digit string ending in <code>X</code>.</p>
+    <% if (typeof regexResult !== 'undefined' && regexResult) { %>
+      <p>Pattern <code><%= regexResult.pattern %></code> → match: <strong><%= regexResult.match %></strong></p>
+    <% } %>
+    <form method="post" action="/tools/regex" class="form">
+      <label>Pattern <input name="pattern" value="^(\d+)*$" required></label>
+      <label>Input <textarea name="input" rows="3">1111111111111111111111111111111X</textarea></label>
+      <button type="submit">Test</button>
+    </form>
+    <% if (typeof error !== 'undefined' && error) { %><p class="error-box"><%= error %></p><% } %>
+  </div>
+</div>
+<p><a href="/tools/vault-check">Run vault check</a> (calls IMDS + vault from the server).</p>

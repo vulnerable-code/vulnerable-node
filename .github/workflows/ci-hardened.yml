@@ -1,0 +1,74 @@
+# HARDENED — NodeBazaar CI (GitHub Actions)
+# Reference version for the training lab docs/labs/11-poisoned-pipelines.md.
+# Differences vs ci.yml:
+#   1. No pull_request_target: fork PRs run with pull_request (no secrets),
+#      secrets-consuming jobs trigger on push to trusted branches only
+#   2. No untrusted interpolation into run: — payload data read from files
+#      and passed as env, always quoted
+#   3. Actions pinned to full commit SHAs
+#   4. Explicit minimal permissions: contents: read
+
+name: ci
+
+on:
+  pull_request:             # untrusted PRs get sandboxed builds, no secrets
+    branches: [master]
+  push:
+    branches: [master]
+
+# Least privilege: the workflow token can read the repo, nothing else.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2, SHA-pinned
+
+      - name: Set up Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0, SHA-pinned
+        with:
+          node-version: 22
+
+      - name: Install
+        run: npm install
+
+      - name: Unit tests
+        run: node --test sast/tests/ || true
+
+      # Safe pattern: untrusted values go through env, quoted — never into
+      # the script text itself. A PR title with shell metacharacters stays data.
+      - name: Show PR metadata
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          echo "New PR: $PR_TITLE by $PR_AUTHOR"
+
+  # Any job that consumes secrets runs ONLY on push from trusted branches.
+  deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Deploy (trusted code only)
+        env:
+          DEPLOY_API_KEY: ${{ secrets.DEPLOY_API_KEY }}
+        run: |
+          echo "Deploying with key ${DEPLOY_API_KEY:0:4}****"   # mask in logs
+          # ./scripts/deploy.sh  — secrets reach the script via env, not argv
+
+      - name: Build image tag from ref (safe)
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "docker build -t nodebazaar:${BRANCH//\//-} ."

