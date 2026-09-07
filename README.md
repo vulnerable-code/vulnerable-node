@@ -12,13 +12,14 @@
 
 <p align="center">
   Inspired by <a href="https://github.com/digininja/DVWA">DVWA</a>
-  · Author <a href="https://github.com/cr0hn">Daniel García (cr0hn)</a>
+  · Author <a href="mailto:daniel@danielalfocea.com">Daniel Alfocea</a>
   · <a href="LICENSE">BSD</a>
 </p>
 
 <p align="center">
   <code>no&nbsp;mocks</code>&nbsp;·&nbsp;<code>no&nbsp;fake&nbsp;vulns</code>&nbsp;·&nbsp;<code>real&nbsp;PostgreSQL&nbsp;on&nbsp;the&nbsp;other&nbsp;end</code>
-</p>
+
+![NodeBazaar — the full store](docs/screenshots/hero-full.png)
 
 **This is not a toy mock.** NodeBazaar is a working storefront: catalog, product pages, reviews, guest checkout with a Stripe-style test card, orders, account, admin tools, and a small JSON API. The bugs are real code paths against real Postgres and Mongo. When you inject SQL, you hit PostgreSQL. When you SSRF, the app reaches services on the Docker network. Nothing is faked with a hardcoded "hack succeeded" string.
 
@@ -149,7 +150,9 @@ azure-pipelines.yml, pipelines/   Azure DevOps (unsafe + hardened)
 
 ## Author
 
-Main author: [Daniel García (cr0hn)](https://github.com/cr0hn). More at [cr0hn.com](https://cr0hn.com).
+**Daniel Alfocea** — [daniel@danielalfocea.com](mailto:daniel@danielalfocea.com)
+
+Original *vulnerable-node* (2016) by [Daniel García (cr0hn)](https://github.com/cr0hn).
 
 ## License
 

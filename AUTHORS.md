@@ -1,6 +1,8 @@
 # Authors
 
-Main author: [Daniel García (cr0hn)](https://github.com/cr0hn) — original vulnerable-node (2016) and the dvwa-nodejs rewrite.
+Main author: **Daniel Alfocea** — [daniel@danielalfocea.com](mailto:daniel@danielalfocea.com) — dvwa-nodejs rewrite (2026).
+
+Original vulnerable-node (2016): [Daniel García (cr0hn)](https://github.com/cr0hn).
 
 ## Contributors
 
