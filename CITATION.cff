@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: dvwa-nodejs
+message: >-
+  Damn Vulnerable Node.js Application — a real Node.js shop
+  (NodeBazaar) that is intentionally full of security bugs, for
+  security training and analyzer research. Node.js port of DVWA.
+authors:
+  - given-names: Daniel
+    family-names: Alfocea
+    email: daniel@danielalfocea.com
+version: 2.1.0
+date-released: "2026-09-07"
+license: BSD-3-Clause
+repository-code: "https://github.com/cr0hn/vulnerable-node"
+keywords:
+  - security
+  - vulnerability
+  - dvwa
+  - nodejs
+  - owasp
+  - penetration-testing
+  - security-training
+abstract: >-
+  An intentionally vulnerable Node.js/Express e-commerce application
+  backed by real PostgreSQL and MongoDB. Ships with exploit guides,
+  fix references, and a SAST benchmark, for security training and
+  research on source code analyzers.
