@@ -1,4 +1,4 @@
-# UNSAFE ON PURPOSE — DVWA NodeJS CI (GitHub Actions)
+# UNSAFE ON PURPOSE — vulnerable-nodejs CI (GitHub Actions)
 # This workflow is intentionally vulnerable for the training lab
 # docs/labs/11-poisoned-pipelines.md. Do NOT point it at real credentials.
 # Compare with ci-hardened.yml in this folder.
@@ -54,4 +54,4 @@ jobs:
       - name: Build image tag from branch
         run: |
           BRANCH=${{ github.head_ref }}
-          echo "docker build -t dvwa-nodejs:\${BRANCH//\//-} ."
+          echo "docker build -t vulnerable-nodejs:\${BRANCH//\//-} ."

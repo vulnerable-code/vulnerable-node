@@ -1,4 +1,4 @@
-# HARDENED — DVWA NodeJS CI (GitHub Actions)
+# HARDENED — vulnerable-nodejs CI (GitHub Actions)
 # Reference version for the training lab docs/labs/11-poisoned-pipelines.md.
 # Differences vs ci.yml:
 #   1. No pull_request_target: fork PRs run with pull_request (no secrets),
@@ -105,4 +105,4 @@ jobs:
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
-          echo "docker build -t dvwa-nodejs:\${BRANCH//\//-} ."
+          echo "docker build -t vulnerable-nodejs:\${BRANCH//\//-} ."

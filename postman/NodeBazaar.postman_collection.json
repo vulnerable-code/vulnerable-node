@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "dvwa-nodejs (NodeBazaar store)",
+    "name": "vulnerable-nodejs (NodeBazaar store)",
     "description": "Requests for the intentionally vulnerable NodeBazaar shop. baseUrl = http://localhost:8888. Log in first (the Login requests save the session cookie automatically). Every lab in docs/labs/ has at least one request here.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },

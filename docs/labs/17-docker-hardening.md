@@ -52,7 +52,7 @@ RUN npm ci --omit=dev          # lockfile-pinned, prod-only
 COPY . .
 RUN chown -R node:node /app
 USER node                      # the line that turns "root on pwn" into "user on pwn"
-LABEL org.opencontainers.image.title="dvwa-nodejs"   # + source/licenses…
+LABEL org.opencontainers.image.title="vulnerable-nodejs"   # + source/licenses…
 ```
 
 ```yaml

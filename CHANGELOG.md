@@ -1,4 +1,4 @@
-# Changelog — dvwa-nodejs
+# Changelog — vulnerable-nodejs
 
 All notable changes to this project. Format based on [Keep a Changelog](https://keepachangelog.com/).
 
@@ -14,7 +14,7 @@ Polish pass on the 2.0.0 rewrite: store UX and documentation.
 - Checkout as two-column page with sticky order summary ("Total: whatever you type" — lab 06 visible in the UI)
 - Contact page with working log-injection vector (extends lab 10)
 - Responsive pass: zero horizontal overflow at 390px on every page; navbar, buybox and grids verified in-browser at 390px/1311px
-- New project banner (docs/banner.png), lab docs expanded to numbered walkthrough format, AUTHORS.md
+- Lab docs expanded to numbered walkthrough format, AUTHORS.md (project banner later removed)
 
 ### Fixed
 - Navbar `<form>` left open swallowed page forms (login/checkout lost styling)

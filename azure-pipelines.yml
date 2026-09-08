@@ -1,4 +1,4 @@
-# UNSAFE ON PURPOSE — DVWA NodeJS CI (Azure DevOps)
+# UNSAFE ON PURPOSE — vulnerable-nodejs CI (Azure DevOps)
 # Intentionally vulnerable for the training lab
 # docs/labs/11-poisoned-pipelines.md. Do NOT connect to real credentials.
 # Compare with pipelines/azure-pipelines.hardened.yml.
@@ -43,5 +43,5 @@ steps:
     displayName: Notify about the PR
     condition: eq(variables['Build.Reason'], 'PullRequest')
 
-  - script: docker build -t dvwa-nodejs:$(System.PullRequest.SourceBranch) .
+  - script: docker build -t vulnerable-nodejs:$(System.PullRequest.SourceBranch) .
     displayName: Build image
