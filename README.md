@@ -120,7 +120,7 @@ bash smoke.sh         # container hardening smoke (non-root, read-only fs)
 - Node.js 22 + Express 4 (server-rendered EJS UI + small JSON API)
 - PostgreSQL via `pg`
 - MongoDB (tag filter / NoSQL lab)
-- Plain CSS, no build step
+- Plain CSS + vanilla JS, no build step, zero frontend dependencies
 - Docker Compose
 - Local IMDS + vault mocks for SSRF
 
