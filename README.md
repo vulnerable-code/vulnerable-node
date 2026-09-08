@@ -142,11 +142,16 @@ The original reason this repo exists: measuring how well source code analyzers (
 
 See [`sast/README.md`](sast/README.md).
 
+# NodeBazaar — vulnerable-nodejs/README.md conflict resolution: keep both sections, they document different features
 ## Track your progress
 
 Log in and open [`/labs`](docs/labs/README.md#track-your-progress) — a live dashboard that runs the real
 exploits from `tests/exploits.js` against the app as your own user and shows which labs you have
 exploited (✅/❌ per card, with a progress bar). Mutating labs (04/05/06) are restored afterwards.
+
+### Live SAST results
+
+The [`sast-benchmark`](.github/workflows/sast-benchmark.yml) workflow runs semgrep and njsscan against `sast/seeds/` on every push to `master`, scores them with the ground-truth manifest, and publishes a TPR/FPR table to the [Actions tab](../../actions/workflows/sast-benchmark.yml). Reference numbers and the local runner live in [`sast/README.md`](sast/README.md#ci-benchmark).
 
 ## Layout
 

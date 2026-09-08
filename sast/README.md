@@ -35,6 +35,32 @@ The original mission of vulnerable-node (2016): measure the quality of static an
 
 A tool that scores well on seeds but misses the same bugs in `routes/` and `model/` is pattern-matching, not analyzing — the shop is the integration test, the seeds are the unit test.
 
-## Scoring helper
+## CI benchmark
 
-`sast/tests/score.js` compares an analyzer's SARIF/JSON output against the ground truth (usage in the file header). CI runs it on every push so the baseline never rots.
+[`.github/workflows/sast-benchmark.yml`](../.github/workflows/sast-benchmark.yml) runs the benchmark automatically on every push to `master` (and on demand via *workflow_dispatch*):
+
+- The **semgrep** job scans `sast/seeds/` with `--config p/default`, scores the report with `sast/tests/score.js`, and uploads `semgrep.json` + the score line as artifacts.
+- The **njsscan** job does the same, after normalizing njsscan's rule-grouped JSON into the `{"results":[{"file":...}]}` shape score.js accepts.
+- The **summary** job collects both and writes a combined TPR/FPR table to the workflow run's *Summary* page. Raw reports are also downloadable as artifacts (`sast-semgrep`, `sast-njsscan`, `sast-benchmark-combined`).
+
+Results land in two places: the **Actions run summary** (markdown table) and the **artifacts** of each run. See the [Actions tab](../../actions/workflows/sast-benchmark.yml).
+
+### Run it locally
+
+```bash
+python3 -m pip install --user semgrep   # or: njsscan
+./sast/benchmark.sh semgrep             # or: ./sast/benchmark.sh njsscan
+```
+
+The script runs the tool on `sast/seeds/` only, normalizes its output, and prints the TP/FN/FP + TPR/FPR line from `sast/tests/score.js`.
+
+### Reference numbers
+
+Baseline captured locally with semgrep 1.176.1 (`p/default`) and njsscan 1.0.0, scoring `sast/seeds/` against `ground-truth.yaml`:
+
+| Tool | TP | FN | FP | TPR | FPR | Missed | False positives |
+|------|----|----|----|-----|-----|--------|-----------------|
+| semgrep (`p/default`) | 10/12 | 2 | 1 | 0.83 | 0.09 | `nosql-operator.js`, `prototype-pollution.js` | `clean-escaped.js` |
+| njsscan | 6/12 | 6 | 1 | 0.50 | 0.14 | `sqli-concat.js`, `nosql-operator.js`, `path-traversal.js`, `ssrf-fetch.js`, `redos-nested.js`, `prototype-pollution.js` | `clean-escaped.js` |
+
+To regenerate after changing seeds or tool versions, run `./sast/benchmark.sh <tool>` locally or trigger the workflow from the Actions tab.
