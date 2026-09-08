@@ -79,6 +79,7 @@ async function main() {
   app.use(require("./routes/orders"));
   app.use(require("./routes/account"));
   app.use(require("./routes/tools"));
+  app.use(require("./routes/progress"));
   app.use("/api/v1", require("./routes/api/v1"));
 
   // 404
