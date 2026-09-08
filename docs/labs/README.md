@@ -63,3 +63,13 @@ npm run verify:fixes  # inverted harness: exit 0 = you fixed them all
 ```
 
 `tests/exploits.js` is the single source of truth — one exploit definition per lab, reused by both the test suite and the fix-verification CLI.
+## Track your progress
+
+Log in and open **/labs** (the "Labs" link in the navbar) for a live progress
+dashboard: one card per lab, and a **Run checks** button that executes the real
+exploits from `tests/exploits.js` against the running app — as your own user,
+never against anyone else. A couple of the exploits mutate state (04 promotes
+your account, 05 posts a review, 06 creates a 1-cent order); the checker
+restores your account and deletes the test review afterwards, and nothing runs
+until you press the button. Results link to each lab's guide, so the dashboard
+doubles as a checklist for the [suggested learning path](#suggested-learning-path).

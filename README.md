@@ -142,6 +142,12 @@ The original reason this repo exists: measuring how well source code analyzers (
 
 See [`sast/README.md`](sast/README.md).
 
+## Track your progress
+
+Log in and open [`/labs`](docs/labs/README.md#track-your-progress) — a live dashboard that runs the real
+exploits from `tests/exploits.js` against the app as your own user and shows which labs you have
+exploited (✅/❌ per card, with a progress bar). Mutating labs (04/05/06) are restored afterwards.
+
 ## Layout
 
 ```
