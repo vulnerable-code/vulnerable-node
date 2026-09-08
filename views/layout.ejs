@@ -8,9 +8,11 @@
 </head>
 <body>
 <nav class="nav">
-  <a class="brand" href="/">Node<b>Bazaar</b></a>
+  <a class="brand" href="/">Node<b>Bazaar</b><span class="cart-badge" aria-live="polite" hidden>0</span></a>
   <form class="searchbox" action="/search" method="get">
-    <input type="search" name="q" placeholder="Search products…" value="<%= typeof q !== 'undefined' && q ? q : '' %>" aria-label="Search">
+    <div class="searchbox-wrap">
+      <input type="search" name="q" placeholder="Search products…" value="<%= typeof q !== 'undefined' && q ? q : '' %>" aria-label="Search" autocomplete="off">
+    </div>
   </form>
   <div class="links">
     <a href="/">Home</a>
@@ -39,3 +41,7 @@
   </div>
   <p>NodeBazaar — intentionally vulnerable Node.js shop. Local use only.</p>
 </footer>
+<button class="to-top" type="button" aria-label="Back to top" title="Back to top">↑</button>
+<script src="/js/app.js" defer></script>
+</body>
+</html>
