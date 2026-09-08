@@ -1,6 +1,6 @@
-# dvwa-nodejs labs
+# vulnerable-nodejs labs
 
-Exploit-and-fix notes for [dvwa-nodejs](https://github.com/cr0hn/vulnerable-node) — the intentionally vulnerable Node.js shop (inside it, the NodeBazaar store), inspired by [DVWA](https://github.com/digininja/DVWA). Findings map to the [OWASP Top 10:2025](https://owasp.org/Top10/2025/).
+Exploit-and-fix notes for [vulnerable-nodejs](https://github.com/cr0hn/vulnerable-node) — the intentionally vulnerable Node.js shop (inside it, the NodeBazaar store), inspired by [DVWA](https://github.com/digininja/DVWA). Findings map to the [OWASP Top 10:2025](https://owasp.org/Top10/2025/).
 
 **Local use only.** Do not expose the stack to the internet.
 

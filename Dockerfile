@@ -2,10 +2,10 @@
 FROM node:22-slim
 
 # OCI labels
-LABEL org.opencontainers.image.title="dvwa-nodejs" \
+LABEL org.opencontainers.image.title="vulnerable-nodejs" \
       org.opencontainers.image.description="Intentionally vulnerable Node.js shop for security training (NodeBazaar)" \
-      org.opencontainers.image.authors="dvwa-nodejs contributors" \
-      org.opencontainers.image.source="https://github.com/cr0hn/dvwa-nodejs" \
+      org.opencontainers.image.authors="vulnerable-nodejs contributors" \
+      org.opencontainers.image.source="https://github.com/cr0hn/vulnerable-node" \
       org.opencontainers.image.licenses="MIT"
 
 WORKDIR /app

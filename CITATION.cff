@@ -1,9 +1,9 @@
 cff-version: 1.2.0
-title: dvwa-nodejs
+title: vulnerable-nodejs
 message: >-
-  Damn Vulnerable Node.js Application — a real Node.js shop
-  (NodeBazaar) that is intentionally full of security bugs, for
-  security training and analyzer research. Node.js port of DVWA.
+  Vulnerable Nodejs — a real shop (NodeBazaar) intentionally full of
+  security bugs. 14 labs, OWASP Top 10:2025, SAST benchmark.
+  Node.js port of DVWA.
 authors:
   - given-names: Daniel
     family-names: Alfocea

@@ -1,13 +1,13 @@
-# dvwa-nodejs
+# vulnerable-nodejs
 
 <p align="center">
-  <img src="docs/logo.png" alt="dvwa-nodejs logo" width="220">
+  <img src="docs/logo.png" alt="vulnerable-nodejs logo" width="220">
 </p>
 
 <p align="center">
-  <strong>dvwa-nodejs</strong> — Damn Vulnerable Node.js Application.<br/>
-  Inside it runs <strong>NodeBazaar</strong>, a real geek-merch shop that is intentionally full of security bugs.<br/>
-  Express · Postgres · Mongo · Docker Compose · OWASP Top 10:2025
+  <strong>vulnerable-nodejs</strong> — a real shop (<strong>NodeBazaar</strong>) intentionally full of security bugs.<br/>
+  14 labs · OWASP Top 10:2025 · SAST benchmark · Node.js port of DVWA<br/>
+  Express · Postgres · Mongo · Docker Compose
 </p>
 
 <p align="center">

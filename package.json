@@ -1,8 +1,8 @@
 {
-  "name": "dvwa-nodejs",
+  "name": "vulnerable-nodejs",
   "version": "2.1.0",
   "private": true,
-  "description": "DVWA NodeJS - a real Node.js shop (NodeBazaar) that is intentionally full of security bugs, for training and security tooling research. Node.js port of DVWA.",
+  "description": "vulnerable-nodejs — Damn Vulnerable Node.js Application. A real shop (NodeBazaar) intentionally full of security bugs. 14 labs, OWASP Top 10:2025, SAST benchmark. Node.js port of DVWA.",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
