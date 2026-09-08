@@ -1,0 +1,134 @@
+# SAST benchmark — seeds vs ground truth (safe by design).
+# Scans ONLY sast/seeds/ (scanner bait, nothing is served or run),
+# scores each tool with sast/tests/score.js, publishes results to the
+# step summary and uploads raw reports as artifacts.
+# Reference: sast/README.md
+name: sast-benchmark
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2, SHA-pinned
+
+      - name: Install semgrep
+        run: python3 -m pip install --user semgrep
+
+      - name: Scan seeds
+        run: |
+          # p/default needs no registry token beyond anonymous registry access
+          semgrep scan sast/seeds/ --config p/default --json --quiet -o semgrep.json
+
+      - name: Score
+        run: node sast/tests/score.js semgrep.json | tee sast-semgrep.txt
+
+      - name: Step summary
+        run: |
+          {
+            echo "## Semgrep — SAST benchmark (sast/seeds/)"
+            echo '```'
+            cat sast-semgrep.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4, SHA-pinned
+        with:
+          name: sast-semgrep
+          path: |
+            semgrep.json
+            sast-semgrep.txt
+
+  njsscan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2, SHA-pinned
+
+      - name: Install njsscan
+        run: python3 -m pip install --user njsscan
+
+      - name: Scan seeds
+        run: njsscan sast/seeds/ --json -o njsscan.json || true
+
+      - name: Normalize + score
+        run: |
+          node -e '
+            const fs = require("fs");
+            const raw = JSON.parse(fs.readFileSync("njsscan.json", "utf8"));
+            const files = new Set();
+            // njsscan shape: {"nodejs": {rule: {files: [{file_path}]}, ...},
+            //                 "templates": {rule: {files: [...]}, ...}}
+            for (const section of [raw.nodejs, raw.templates]) {
+              for (const r of Object.values(section || {})) {
+                for (const f of r.files || []) files.add(f.file_path);
+              }
+            }
+            fs.writeFileSync(
+              "njsscan-normalized.json",
+              JSON.stringify({ results: [...files].map((file) => ({ file })) })
+            );
+          '
+          node sast/tests/score.js njsscan-normalized.json | tee sast-njsscan.txt
+
+      - name: Step summary
+        run: |
+          {
+            echo "## njsscan — SAST benchmark (sast/seeds/)"
+            echo '```'
+            cat sast-njsscan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4, SHA-pinned
+        with:
+          name: sast-njsscan
+          path: |
+            njsscan.json
+            njsscan-normalized.json
+            sast-njsscan.txt
+
+  summary:
+    needs: [semgrep, njsscan]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2, SHA-pinned
+
+      - name: Combined summary
+        run: |
+          {
+            echo "# SAST benchmark — combined"
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo "| Tool | TPR | FPR |"
+            echo "|------|-----|-----|"
+            for t in semgrep njsscan; do
+              tpr=$(grep -o 'TPR = [0-9.]*' "sast-$t.txt" | head -1 | cut -d' ' -f3)
+              fpr=$(grep -o 'FPR = [0-9.]*' "sast-$t.txt" | head -1 | cut -d' ' -f3)
+              echo "| $t | ${tpr:-n/a} | ${fpr:-n/a} |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload combined
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4, SHA-pinned
+        with:
+          name: sast-benchmark-combined
+          path: sast-*.txt

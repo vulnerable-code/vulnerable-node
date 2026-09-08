@@ -142,6 +142,10 @@ The original reason this repo exists: measuring how well source code analyzers (
 
 See [`sast/README.md`](sast/README.md).
 
+### Live results
+
+The [`sast-benchmark`](.github/workflows/sast-benchmark.yml) workflow runs semgrep and njsscan against `sast/seeds/` on every push to `master`, scores them with the ground-truth manifest, and publishes a TPR/FPR table to the [Actions tab](../../actions/workflows/sast-benchmark.yml). Reference numbers and the local runner live in [`sast/README.md`](sast/README.md#ci-benchmark).
+
 ## Layout
 
 ```
