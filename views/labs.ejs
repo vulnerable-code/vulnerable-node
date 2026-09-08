@@ -1,0 +1,35 @@
+<h1>Lab progress</h1>
+<p class="muted labs-intro">
+  Track which of the <%= total %> labs you have exploited. Nothing runs until you press
+  <strong>Run checks</strong> — the checks execute the real exploits from
+  <code>tests/exploits.js</code> <em>as your user</em>; a couple create test
+  orders/reviews that are cleaned up afterwards.
+</p>
+
+<div class="labs-topbar">
+  <div class="labs-progress" role="progressbar" aria-valuemin="0" aria-valuemax="<%= total %>" aria-valuenow="0" id="progress">
+    <div class="labs-progress-fill" id="progress-fill"></div>
+    <span class="labs-progress-label" id="progress-label">0 / <%= total %></span>
+  </div>
+  <button id="run-checks" class="btn btn-primary">Run checks</button>
+</div>
+<p id="labs-error" class="error-box" hidden></p>
+
+<div class="labs-grid" id="labs-grid">
+  <% for (const lab of labs) { %>
+    <div class="card lab-card" id="lab-<%= lab.id %>">
+      <div class="card-body">
+        <div class="lab-head">
+          <h3><%= lab.name %></h3>
+          <span class="pill pill-pending">…</span>
+        </div>
+        <p class="lab-detail muted" id="lab-detail-<%= lab.id %>">Press "Run checks" to test.</p>
+        <% if (lab.doc) { %>
+          <a class="lab-doc" href="/labs/docs/<%= lab.doc %>">Guide: docs/labs/<%= lab.doc %></a>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<script src="/js/labs.js"></script>
