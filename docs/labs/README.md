@@ -58,7 +58,7 @@ Each lab lists the exact file and function to fix. Fix it, restart `web`, and tr
 ## Verify your fixes
 
 ```bash
-npm test              # 13 exploit tests: all must PASS on the vulnerable app
+npm test              # 17 tests: all must PASS on the vulnerable app
 npm run verify:fixes  # inverted harness: exit 0 = you fixed them all
 ```
 

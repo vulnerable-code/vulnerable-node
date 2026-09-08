@@ -108,7 +108,7 @@ const { rows } = await db.orderById(req.params.id);
 ## Test suite & fix verification
 
 ```bash
-npm test              # 13 exploit tests — all must PASS on the vulnerable app
+npm test              # 17 tests — 13 exploit checks + 4 dashboard, all must PASS
 npm run verify:fixes  # after you fix the labs: exit 0 means all exploits fail
 bash smoke.sh         # container hardening smoke (non-root, read-only fs)
 ```
